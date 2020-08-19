@@ -1,5 +1,6 @@
 const discord = require('discord.js');
 const youtube = require('ytdl-core');
+const config = require('./config.json');
 
 const client = new discord.Client();
 const queue = new Map();
@@ -29,6 +30,10 @@ client.on('message', async (message) => {
     }
     else if (message.content.startsWith('!stop')) {
         stop(message, serverQueue);
+        return;
+    }
+    else if (message.content.startsWith('!queue')) {
+        queueList(message, serverQueue);
         return;
     }
     else {
@@ -116,4 +121,23 @@ async function stop(message, serverQueue) {
     serverQueue.connection.dispatcher.end()
 };
 
-client.login('<YOUR-TOKEN>');
+async function queueList(message, serverQueue) {
+    if (!serverQueue || !serverQueue.songs)
+        return (message.channel.send("There's no sound in the queue!"));
+    var queueList = [];
+    for (var i = 0; i < serverQueue.songs.length; i++) {
+        queueList.push({
+            name: serverQueue.songs[i].title,
+            value: serverQueue.songs[i].url
+        });
+    };
+
+    const queueEmbed = new discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Queue list')
+        .addFields(queueList)
+        .setTimestamp()
+    message.channel.send(queueEmbed);
+}
+
+client.login(config.token);
