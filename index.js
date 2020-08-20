@@ -36,8 +36,9 @@ client.on('message', async (message) => {
         queueList(message, serverQueue);
         return;
     }
-    else {
-        message.channel.send("Please write a valid command!")
+    else if (message.content.startsWith('!dmb')) {
+        help(message);
+        return;
     }
 });
 
@@ -62,13 +63,16 @@ function play(guild, song) {
 
 async function execute(message, serverQueue) {
     const args = message.content.split(" ");
+    if (!args || !args[1])
+        return (message.channel.send("You didn't put an url, so I can't find your music!"));
+    
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel)
-        return (message.send("You need to be in a voice channel to play music!"));
+        return (message.channel.send("You need to be in a voice channel to play music!"));
 
     const user = message.member;
     if (!user.hasPermission("CONNECT") || !user.hasPermission("SPEAK"))
-        return (message.send("I need the permissions to join and speak in your voice channel!"));
+        return (message.channel.send("I need the permissions to join and speak in your voice channel!"));
 
     const songInfo = await youtube.getInfo(args[1]);
     const song = {
@@ -114,14 +118,14 @@ async function skip(message, serverQueue) {
 
 async function stop(message, serverQueue) {
     if (!message.member.voice.channel)
-    return message.channel.send(
-      "You have to be in a voice channel to stop the music!"
-    );
+        return message.channel.send("You have to be in a voice channel to stop the music!");
+    if (!serverQueue || !serverQueue.songs)
+        return (message.channel.send("There is no song that I could stop!"));
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end()
 };
 
-async function queueList(message, serverQueue) {
+function queueList(message, serverQueue) {
     if (!serverQueue || !serverQueue.songs)
         return (message.channel.send("There's no sound in the queue!"));
     var queueList = [];
@@ -138,6 +142,20 @@ async function queueList(message, serverQueue) {
         .addFields(queueList)
         .setTimestamp()
     message.channel.send(queueEmbed);
+}
+
+function help(message) {
+    const helpEmbed = new discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Help')
+        .addFields(
+            {name: '!play <YOUR-URL>', value: 'Play your song or add to queue.'},
+            {name: '!stop', value: 'Stop the current song.'},
+            {name: '!skip', value: 'Skip to the next song or if it doesn\'t exist just stop it.'},
+            {name: '!queue', value: 'Displays the list of songs in the waiting list.'},
+        )
+        .setTimestamp()
+    message.channel.send(helpEmbed);
 }
 
 client.login(config.token);
