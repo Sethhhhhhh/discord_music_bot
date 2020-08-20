@@ -1,3 +1,9 @@
 {
-    "token": "<YOUR-TOKEN>"
+    "token"             : "<YOUR-TOKEN>",
+    "prefix_command"    : "!",
+    "play_command"      : "play",
+    "skip_command"      : "skip",
+    "stop_command"      : "stop",
+    "help_command"      : "dmb",
+    "queue_command"     : "queue"
 }

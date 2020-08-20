@@ -17,26 +17,26 @@ client.once('disconnect', () => {
 
 client.on('message', async (message) => {
     if (message.author.bot) return;
-    if (!message.content.startsWith('!')) return;
+    if (!message.content.startsWith(config.prefix_command)) return;
 
     const serverQueue = queue.get(message.guild.id);
-    if (message.content.startsWith('!play')) {
+    if (message.content.startsWith(config.prefix_command + config.play_command)) {
         execute(message, serverQueue);
         return;
     }
-    else if (message.content.startsWith('!skip')) {
+    else if (message.content.startsWith(config.prefix_command + config.skip_command)) {
         skip(message, serverQueue);
         return;
     }
-    else if (message.content.startsWith('!stop')) {
+    else if (message.content.startsWith(config.prefix_command + config.stop_command)) {
         stop(message, serverQueue);
         return;
     }
-    else if (message.content.startsWith('!queue')) {
+    else if (message.content.startsWith(config.prefix_command + config.queue_command)) {
         queueList(message, serverQueue);
         return;
     }
-    else if (message.content.startsWith('!dmb')) {
+    else if (message.content.startsWith(config.prefix_command + config.help_command)) {
         help(message);
         return;
     }
@@ -149,10 +149,10 @@ function help(message) {
         .setColor('#0099ff')
         .setTitle('Help')
         .addFields(
-            {name: '!play <YOUR-URL>', value: 'Play your song or add to queue.'},
-            {name: '!stop', value: 'Stop the current song.'},
-            {name: '!skip', value: 'Skip to the next song or if it doesn\'t exist just stop it.'},
-            {name: '!queue', value: 'Displays the list of songs in the waiting list.'},
+            {name: config.prefix_command + config.play_command + ' <YOUR-URL>', value: 'Play your song or add to queue.'},
+            {name: config.prefix_command + config.stop_command, value: 'Stop the current song.'},
+            {name: config.prefix_command + config.skip_command, value: 'Skip to the next song or if it doesn\'t exist just stop it.'},
+            {name: config.prefix_command + config.queue_command, value: 'Displays the list of songs in the waiting list.'},
         )
         .setTimestamp()
     message.channel.send(helpEmbed);
